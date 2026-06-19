@@ -104,3 +104,16 @@ export interface Contact {
   created_at: string;
   updated_at: string;
 }
+
+export interface JobApplication {
+  id: string;
+  company: string;
+  role: string;
+  status: string;
+  applied_at: string | null;
+  url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  contacts?: Contact[];
+}
