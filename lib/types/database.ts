@@ -90,3 +90,17 @@ export interface LinkedinProfile {
   created_at: string;
   updated_at: string;
 }
+
+export interface Contact {
+  id: string;
+  name: string;
+  company: string | null;
+  category: string | null;
+  role: string | null;
+  how_met: string | null;
+  notes: string | null;
+  last_contacted: string | null;
+  linkedin_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
