@@ -90,3 +90,32 @@ export interface LinkedinProfile {
   created_at: string;
   updated_at: string;
 }
+
+// Phase 2: CRM contacts (from 0002_crm_contacts.sql)
+export interface Contact {
+  id: string;
+  name: string;
+  company: string | null;
+  category: string | null;
+  role: string | null;
+  how_met: string | null;
+  notes: string | null;
+  last_contacted: string | null;
+  linkedin_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Phase 2: Job applications (from 0003_job_applications.sql)
+export interface JobApplication {
+  id: string;
+  company: string;
+  role: string;
+  status: string;
+  applied_at: string | null;
+  url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  contacts?: Contact[]; // populated client-side via /api/applications/[id]/contacts
+}

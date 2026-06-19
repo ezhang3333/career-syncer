@@ -7,6 +7,7 @@ const navItems = [
   { href: "/career-data", label: "Career Data" },
   { href: "/resumes", label: "Resumes" },
   { href: "/linkedin", label: "LinkedIn" },
+  { href: "/applications", label: "Applications" },
 ];
 
 export default function Sidebar() {
