@@ -9,6 +9,7 @@ const navItems = [
   { href: "/linkedin", label: "LinkedIn" },
   { href: "/applications", label: "Applications" },
   { href: "/networking", label: "Networking" },
+  { href: "/portfolio", label: "Portfolio" },
 ];
 
 export default function Sidebar() {
