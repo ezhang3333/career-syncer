@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import type { Contact } from "@/lib/types/database";
+import ClusterViz from "@/components/networking/ClusterViz";
 
 const CATEGORIES = ["Tech", "Government", "Finance", "Academia", "Other"];
 
@@ -35,6 +36,8 @@ export default function NetworkingPage() {
   const [editForm, setEditForm] = useState<FormState>(EMPTY_FORM);
   const [editError, setEditError] = useState<string | null>(null);
   const [editSaving, setEditSaving] = useState(false);
+
+  const [view, setView] = useState<"list" | "viz">("list");
 
   // Fetch contacts on mount
   useEffect(() => {
@@ -186,21 +189,51 @@ export default function NetworkingPage() {
     <div ref={container} className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Networking</h1>
-        <button
-          onClick={() => {
-            setShowAddForm((v) => !v);
-            setAddForm(EMPTY_FORM);
-            setAddError(null);
-          }}
-          className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-opacity hover:opacity-90"
-        >
-          {showAddForm ? "Cancel" : "Add Contact"}
-        </button>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-semibold tracking-tight">Networking</h1>
+          {/* View toggle */}
+          <div className="flex rounded-md border border-white/10 p-0.5 text-sm">
+            <button
+              onClick={() => setView("list")}
+              className={`rounded px-3 py-1 transition-colors ${
+                view === "list"
+                  ? "bg-white text-black"
+                  : "text-white/60 hover:text-white"
+              }`}
+            >
+              List
+            </button>
+            <button
+              onClick={() => setView("viz")}
+              className={`rounded px-3 py-1 transition-colors ${
+                view === "viz"
+                  ? "bg-white text-black"
+                  : "text-white/60 hover:text-white"
+              }`}
+            >
+              Visualization
+            </button>
+          </div>
+        </div>
+        {view === "list" && (
+          <button
+            onClick={() => {
+              setShowAddForm((v) => !v);
+              setAddForm(EMPTY_FORM);
+              setAddError(null);
+            }}
+            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-opacity hover:opacity-90"
+          >
+            {showAddForm ? "Cancel" : "Add Contact"}
+          </button>
+        )}
       </div>
 
+      {/* Visualization view */}
+      {view === "viz" && <ClusterViz />}
+
       {/* Add form */}
-      {showAddForm && (
+      {view === "list" && showAddForm && (
         <form
           onSubmit={handleAdd}
           className="flex flex-col gap-4 rounded-md border border-white/10 bg-white/5 p-4"
@@ -232,18 +265,22 @@ export default function NetworkingPage() {
       )}
 
       {/* Error */}
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {view === "list" && error && (
+        <p className="text-sm text-red-400">{error}</p>
+      )}
 
       {/* Loading */}
-      {loading && <p className="text-sm text-white/40">Loading...</p>}
+      {view === "list" && loading && (
+        <p className="text-sm text-white/40">Loading...</p>
+      )}
 
       {/* Empty state */}
-      {!loading && !error && contacts.length === 0 && (
+      {view === "list" && !loading && !error && contacts.length === 0 && (
         <p className="text-sm text-white/40">No contacts yet. Add one above.</p>
       )}
 
       {/* Contact list */}
-      {!loading && contacts.length > 0 && (
+      {view === "list" && !loading && contacts.length > 0 && (
         <div className="flex flex-col gap-2">
           {contacts.map((contact) =>
             editId === contact.id ? (
