@@ -117,3 +117,14 @@ export interface JobApplication {
   updated_at: string;
   contacts?: Contact[];
 }
+
+export interface PortfolioConfig {
+  id: string;
+  github_owner: string;
+  github_repo: string;
+  github_branch: string;
+  github_pat: string;
+  file_path: string;
+  created_at: string;
+  updated_at: string;
+}
