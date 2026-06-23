@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "@gsap/react": "^2.1.2",
     "@react-pdf/renderer": "^4.5.1",
     "@supabase/ssr": "^0.12.0",

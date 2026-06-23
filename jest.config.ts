@@ -5,6 +5,8 @@ const config: Config = {
   testEnvironment: "node",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
+    // Stub for @anthropic-ai/sdk — package not yet installed; run `npm install`
+    "^@anthropic-ai/sdk$": "<rootDir>/__mocks__/@anthropic-ai/sdk.js",
   },
   transform: {
     "^.+\\.tsx?$": ["ts-jest", { tsconfig: { moduleResolution: "node" } }],

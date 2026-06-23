@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import type { Contact } from "@/lib/types/database";
+import DraftOutreachModal from "@/components/networking/DraftOutreachModal";
 
 const CATEGORIES = ["Tech", "Government", "Finance", "Academia", "Other"];
 
@@ -35,6 +36,8 @@ export default function NetworkingPage() {
   const [editForm, setEditForm] = useState<FormState>(EMPTY_FORM);
   const [editError, setEditError] = useState<string | null>(null);
   const [editSaving, setEditSaving] = useState(false);
+
+  const [outreachContact, setOutreachContact] = useState<Contact | null>(null);
 
   // Fetch contacts on mount
   useEffect(() => {
@@ -242,6 +245,14 @@ export default function NetworkingPage() {
         <p className="text-sm text-white/40">No contacts yet. Add one above.</p>
       )}
 
+      {/* Draft Outreach Modal */}
+      {outreachContact && (
+        <DraftOutreachModal
+          contact={outreachContact}
+          onClose={() => setOutreachContact(null)}
+        />
+      )}
+
       {/* Contact list */}
       {!loading && contacts.length > 0 && (
         <div className="flex flex-col gap-2">
@@ -303,6 +314,12 @@ export default function NetworkingPage() {
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-2 pl-4">
+                  <button
+                    onClick={() => setOutreachContact(contact)}
+                    className="rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/50 hover:text-white/80"
+                  >
+                    Draft Outreach
+                  </button>
                   <button
                     onClick={() => startEdit(contact)}
                     className="rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/60 hover:text-white"
