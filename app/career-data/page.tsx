@@ -298,10 +298,6 @@ function WorkExperienceForm({
 }) {
   const [f, setF] = useState<WEForm>(initial);
 
-  useEffect(() => {
-    setF(initial);
-  }, [initial]);
-
   const set = (k: keyof WEForm, v: unknown) =>
     setF((prev) => ({ ...prev, [k]: v }));
 
@@ -415,6 +411,7 @@ function WorkExperienceTab({
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount; project doesn't use React Compiler
     load();
   }, [load]);
 
@@ -507,6 +504,7 @@ function WorkExperienceTab({
         title={editing ? "Edit Work Experience" : "Add Work Experience"}
       >
         <WorkExperienceForm
+          key={editing ? editing.id : "new"}
           initial={formData}
           onSave={handleSave}
           saving={saving}
@@ -546,10 +544,6 @@ function ProjectFormUI({
   saving: boolean;
 }) {
   const [f, setF] = useState<ProjectForm>(initial);
-
-  useEffect(() => {
-    setF(initial);
-  }, [initial]);
 
   const set = (k: keyof ProjectForm, v: unknown) =>
     setF((prev) => ({ ...prev, [k]: v }));
@@ -645,6 +639,7 @@ function ProjectsTab({
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount; project doesn't use React Compiler
     load();
   }, [load]);
 
@@ -746,6 +741,7 @@ function ProjectsTab({
         title={editing ? "Edit Project" : "Add Project"}
       >
         <ProjectFormUI
+          key={editing ? editing.id : "new"}
           initial={formData}
           onSave={handleSave}
           saving={saving}
@@ -782,10 +778,6 @@ function EducationFormUI({
   saving: boolean;
 }) {
   const [f, setF] = useState<EducationForm>(initial);
-
-  useEffect(() => {
-    setF(initial);
-  }, [initial]);
 
   const set = (k: keyof EducationForm, v: unknown) =>
     setF((prev) => ({ ...prev, [k]: v }));
@@ -890,6 +882,7 @@ function EducationTab({
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount; project doesn't use React Compiler
     load();
   }, [load]);
 
@@ -977,6 +970,7 @@ function EducationTab({
         title={editing ? "Edit Education" : "Add Education"}
       >
         <EducationFormUI
+          key={editing ? editing.id : "new"}
           initial={formData}
           onSave={handleSave}
           saving={saving}
@@ -1006,10 +1000,6 @@ function SkillFormUI({
   saving: boolean;
 }) {
   const [f, setF] = useState<SkillForm>(initial);
-
-  useEffect(() => {
-    setF(initial);
-  }, [initial]);
 
   const set = (k: keyof SkillForm, v: unknown) =>
     setF((prev) => ({ ...prev, [k]: v }));
@@ -1084,6 +1074,7 @@ function SkillsTab({
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount; project doesn't use React Compiler
     load();
   }, [load]);
 
@@ -1162,7 +1153,12 @@ function SkillsTab({
         onClose={() => setPanelOpen(false)}
         title={editing ? "Edit Skill" : "Add Skill"}
       >
-        <SkillFormUI initial={formData} onSave={handleSave} saving={saving} />
+        <SkillFormUI
+          key={editing ? editing.id : "new"}
+          initial={formData}
+          onSave={handleSave}
+          saving={saving}
+        />
       </Panel>
     </>
   );
@@ -1194,10 +1190,6 @@ function CertFormUI({
   saving: boolean;
 }) {
   const [f, setF] = useState<CertForm>(initial);
-
-  useEffect(() => {
-    setF(initial);
-  }, [initial]);
 
   const set = (k: keyof CertForm, v: unknown) =>
     setF((prev) => ({ ...prev, [k]: v }));
@@ -1285,6 +1277,7 @@ function CertificationsTab({
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount; project doesn't use React Compiler
     load();
   }, [load]);
 
@@ -1373,7 +1366,12 @@ function CertificationsTab({
         onClose={() => setPanelOpen(false)}
         title={editing ? "Edit Certification" : "Add Certification"}
       >
-        <CertFormUI initial={formData} onSave={handleSave} saving={saving} />
+        <CertFormUI
+          key={editing ? editing.id : "new"}
+          initial={formData}
+          onSave={handleSave}
+          saving={saving}
+        />
       </Panel>
     </>
   );
