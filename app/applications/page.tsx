@@ -84,6 +84,7 @@ export default function ApplicationsPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount; project doesn't use React Compiler
     Promise.all([fetchApplications(), fetchContacts()]).finally(() =>
       setLoading(false),
     );

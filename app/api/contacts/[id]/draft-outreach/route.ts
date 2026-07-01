@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-// @ts-expect-error - package not yet installed; run `npm install` first
 import Anthropic from "@anthropic-ai/sdk";
 
 type MessageType = "cold" | "followup" | "linkedin-dm" | "thank-you";

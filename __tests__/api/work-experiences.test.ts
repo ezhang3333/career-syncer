@@ -142,7 +142,7 @@ function buildClient(
   return client;
 }
 
-function makeRequest(body?: unknown, method = "POST") {
+function makeRequest(body?: unknown) {
   return {
     json: jest.fn().mockResolvedValue(body),
   } as unknown as Request;
@@ -259,7 +259,7 @@ describe("DELETE /api/work-experiences/[id]", () => {
   it("deletes record and returns 204", async () => {
     buildClient("delete");
 
-    const response = await DELETE(makeRequest(undefined, "DELETE"), {
+    const response = await DELETE(makeRequest(), {
       params: Promise.resolve({ id: "abc" }),
     });
     expect(response.status).toBe(204);
