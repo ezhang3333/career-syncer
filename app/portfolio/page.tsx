@@ -122,6 +122,7 @@ function defaultForm(): FormState {
 
 export default function PortfolioPage() {
   const [form, setForm] = useState<FormState>(defaultForm());
+  const [hasSavedPat, setHasSavedPat] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [pushing, setPushing] = useState(false);
@@ -157,13 +158,16 @@ export default function PortfolioPage() {
       if (res.ok) {
         const data = await res.json();
         if (data) {
+          // The PAT is never sent back by the server — leave the field blank
+          // and rely on `has_pat` to know whether one is already saved.
           setForm({
             github_owner: data.github_owner ?? "",
             github_repo: data.github_repo ?? "",
             github_branch: data.github_branch ?? "main",
-            github_pat: data.github_pat ?? "",
+            github_pat: "",
             file_path: data.file_path ?? "data/career-data.json",
           });
+          setHasSavedPat(!!data.has_pat);
         }
       }
       setLoading(false);
@@ -177,11 +181,17 @@ export default function PortfolioPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await fetch("/api/portfolio/config", {
+    const res = await fetch("/api/portfolio/config", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
+    if (res.ok) {
+      if (form.github_pat) setHasSavedPat(true);
+      // Clear the input so the token isn't left sitting in the DOM/state
+      // longer than needed once it's persisted server-side.
+      setForm((prev) => ({ ...prev, github_pat: "" }));
+    }
     setSaving(false);
   }
 
@@ -242,13 +252,13 @@ export default function PortfolioPage() {
             </div>
 
             <div className="form-field">
-              <Label>Personal Access Token (PAT) *</Label>
+              <Label>Personal Access Token (PAT) {hasSavedPat ? "" : "*"}</Label>
               <Input
                 type="password"
                 value={form.github_pat}
                 onChange={(e) => set("github_pat", e.target.value)}
-                required
-                placeholder="ghp_..."
+                required={!hasSavedPat}
+                placeholder={hasSavedPat ? "Saved — leave blank to keep it" : "ghp_..."}
                 autoComplete="off"
               />
               <p className="mt-1 text-xs text-white/30">
@@ -277,7 +287,12 @@ export default function PortfolioPage() {
               <button
                 type="button"
                 onClick={handlePush}
-                disabled={pushing || !form.github_owner || !form.github_repo || !form.github_pat}
+                disabled={
+                  pushing ||
+                  !form.github_owner ||
+                  !form.github_repo ||
+                  (!form.github_pat && !hasSavedPat)
+                }
                 className="rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 disabled:opacity-40 transition-colors"
               >
                 {pushing ? "Pushing…" : "Push to GitHub"}

@@ -105,11 +105,23 @@ export interface Contact {
   updated_at: string;
 }
 
+export const APPLICATION_STATUSES = [
+  "Wishlist",
+  "Applied",
+  "Phone Screen",
+  "Interview",
+  "Offer",
+  "Rejected",
+  "Archived",
+] as const;
+
+export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
+
 export interface JobApplication {
   id: string;
   company: string;
   role: string;
-  status: string;
+  status: ApplicationStatus;
   applied_at: string | null;
   url: string | null;
   notes: string | null;

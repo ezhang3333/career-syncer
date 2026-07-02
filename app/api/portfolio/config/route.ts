@@ -10,7 +10,12 @@ export async function GET() {
     .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  if (!data) return NextResponse.json(null);
+
+  // Never send the PAT back to the client — it round-trips through the
+  // browser otherwise and shows up in the network tab / devtools.
+  const { github_pat, ...rest } = data;
+  return NextResponse.json({ ...rest, has_pat: !!github_pat });
 }
 
 export async function PUT(request: Request) {
@@ -21,10 +26,11 @@ export async function PUT(request: Request) {
 
   const supabase = await createClient();
 
-  // Fetch the existing row id (if any) for the upsert
+  // Fetch the existing row (if any) for the upsert. We need the current PAT
+  // too, since the client never has it and shouldn't send it back to us.
   const { data: existing } = await supabase
     .from("portfolio_config")
-    .select("id")
+    .select("id, github_pat")
     .limit(1)
     .maybeSingle();
 
@@ -33,7 +39,9 @@ export async function PUT(request: Request) {
     github_owner: body.github_owner ?? "",
     github_repo: body.github_repo ?? "",
     github_branch: body.github_branch ?? "main",
-    github_pat: body.github_pat ?? "",
+    // An empty/omitted PAT means "keep the existing one" — only overwrite
+    // when the client explicitly submits a new, non-empty token.
+    github_pat: body.github_pat ? body.github_pat : (existing?.github_pat ?? ""),
     file_path: body.file_path ?? "data/career-data.json",
     updated_at: new Date().toISOString(),
   };

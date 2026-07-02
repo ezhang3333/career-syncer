@@ -13,14 +13,14 @@ export async function PATCH(
   const { data, error } = await supabase
     .from("contacts")
     .update({
-      name: body.name,
-      company: body.company ?? null,
-      category: body.category ?? null,
-      role: body.role ?? null,
-      how_met: body.how_met ?? null,
-      notes: body.notes ?? null,
-      last_contacted: body.last_contacted ?? null,
-      linkedin_url: body.linkedin_url ?? null,
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.company !== undefined && { company: body.company }),
+      ...(body.category !== undefined && { category: body.category }),
+      ...(body.role !== undefined && { role: body.role }),
+      ...(body.how_met !== undefined && { how_met: body.how_met }),
+      ...(body.notes !== undefined && { notes: body.notes }),
+      ...(body.last_contacted !== undefined && { last_contacted: body.last_contacted }),
+      ...(body.linkedin_url !== undefined && { linkedin_url: body.linkedin_url }),
     })
     .eq("id", id)
     .select()

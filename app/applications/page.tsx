@@ -2,19 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import type { Contact, JobApplication } from "@/lib/types/database";
+import {
+  APPLICATION_STATUSES,
+  type ApplicationStatus,
+  type Contact,
+  type JobApplication,
+} from "@/lib/types/database";
 
-const COLUMNS = [
-  "Wishlist",
-  "Applied",
-  "Phone Screen",
-  "Interview",
-  "Offer",
-  "Rejected",
-  "Archived",
-] as const;
+const COLUMNS = APPLICATION_STATUSES;
 
-type Status = (typeof COLUMNS)[number];
+type Status = ApplicationStatus;
 
 interface AddFormState {
   company: string;
@@ -50,7 +47,7 @@ export default function ApplicationsPage() {
   const [linkContactId, setLinkContactId] = useState<string>("");
 
   // Drag ref
-  const dragRef = useRef<{ applicationId: string; fromStatus: string } | null>(null);
+  const dragRef = useRef<{ applicationId: string; fromStatus: Status } | null>(null);
   // Ref map for moved-card pop animation
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const lastMovedId = useRef<string | null>(null);
@@ -461,7 +458,7 @@ export default function ApplicationsPage() {
                     className="rounded bg-white/10 px-3 py-2 text-sm text-white outline-none"
                     value={(editForm.status as string) ?? "Wishlist"}
                     onChange={(e) =>
-                      setEditForm((f) => ({ ...f, status: e.target.value }))
+                      setEditForm((f) => ({ ...f, status: e.target.value as Status }))
                     }
                   >
                     {COLUMNS.map((c) => (

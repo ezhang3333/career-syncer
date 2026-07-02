@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { APPLICATION_STATUSES } from "@/lib/types/database";
 
 export async function PATCH(
   request: Request,
@@ -8,6 +9,9 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  if (body.status !== undefined && !APPLICATION_STATUSES.includes(body.status)) {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase

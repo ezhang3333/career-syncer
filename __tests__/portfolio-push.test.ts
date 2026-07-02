@@ -84,7 +84,7 @@ function buildPushClient(config: typeof sampleConfig | null, careerData = sample
 
 function buildConfigClient(
   op: "get" | "upsert",
-  existing: { id: string } | null = null,
+  existing: { id: string; github_pat?: string } | null = null,
   result: unknown = sampleConfig,
 ) {
   let client: Record<string, jest.Mock>;
@@ -133,13 +133,18 @@ import { POST } from "@/app/api/portfolio/push/route";
 // ---------------------------------------------------------------------------
 
 describe("GET /api/portfolio/config", () => {
-  it("returns config with 200", async () => {
+  it("returns config with 200, without the raw PAT", async () => {
     buildConfigClient("get", null, sampleConfig);
 
     const response = await GET();
     expect(response.status).toBe(200);
     const data = await response.json();
-    expect(data).toEqual(sampleConfig);
+    expect(data.github_pat).toBeUndefined();
+    expect(data.has_pat).toBe(true);
+    expect(data).toMatchObject({
+      github_owner: sampleConfig.github_owner,
+      github_repo: sampleConfig.github_repo,
+    });
   });
 
   it("returns null when no config exists", async () => {
@@ -187,6 +192,51 @@ describe("PUT /api/portfolio/config", () => {
 
     const response = await PUT(req);
     expect(response.status).toBe(400);
+  });
+
+  it("preserves the existing PAT when none is submitted", async () => {
+    const client = buildConfigClient(
+      "upsert",
+      { id: "cfg-1", github_pat: "ghp_existingtoken" },
+      sampleConfig,
+    );
+
+    const req = makeRequest({
+      github_owner: "testuser",
+      github_repo: "my-portfolio",
+      github_branch: "main",
+      github_pat: "",
+      file_path: "data/career-data.json",
+    });
+
+    const response = await PUT(req);
+    expect(response.status).toBe(200);
+
+    const tableClient = client.from.mock.results[0].value;
+    const upsertCall = tableClient.upsert.mock.calls[0][0];
+    expect(upsertCall.github_pat).toBe("ghp_existingtoken");
+  });
+
+  it("overwrites the PAT when a new one is submitted", async () => {
+    const client = buildConfigClient(
+      "upsert",
+      { id: "cfg-1", github_pat: "ghp_existingtoken" },
+      sampleConfig,
+    );
+
+    const req = makeRequest({
+      github_owner: "testuser",
+      github_repo: "my-portfolio",
+      github_branch: "main",
+      github_pat: "ghp_newtoken",
+      file_path: "data/career-data.json",
+    });
+
+    await PUT(req);
+
+    const tableClient = client.from.mock.results[0].value;
+    const upsertCall = tableClient.upsert.mock.calls[0][0];
+    expect(upsertCall.github_pat).toBe("ghp_newtoken");
   });
 });
 
